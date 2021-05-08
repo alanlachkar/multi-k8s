@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  # Different additionnal configuration
+  annotations:
+    # Create Ingress controller based on nginx
+    kubernetes.io/ingress.class: nginx
+    # Nginx behaviors
+    # Write to prevent error due to an update
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # Remove "/api" after the redirection on the correct ClusterIP (multi-server)
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  # Rules configuration
+  rules:
+    # Rule on http
+    - http:
+        # Redirect according to the URL
+        paths:
+          # Redirect to client-cluster-ip-service (more precisely multi-client pod)
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          # Redirect to server-cluster-ip-service (more precisely multi-server pod)
+          - path: /api/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: server-cluster-ip-service
+                port:
+                  number: 5000
