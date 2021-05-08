@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: alanlachkar/multi-server
+          ports:
+            - containerPort: 5000
+          env:
+            # Name of the ClusterIP linked with redis deployment
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            # Default redis port
+            - name: REDIS_PORT
+              value: "6379"
+            - name: PGUSER
+              value: postgres
+            # Name of the ClusterIP linked with postgres deployment
+            - name: PGHOST
+              value: postgres-cluster-ip-service
+            # Default postgres port
+            - name: PGPORT
+              value: "5432"
+            # Default postgres port
+            - name: PGDATABASE
+              value: postgres
+            # Name of the environment variable
+            # name and key are the same but can be different
+            - name: PGPASSWORD
+              # Get the value for this environment variable from the configuration below
+              valueFrom:
+                secretKeyRef:
+                  # Name of the Secrets object
+                  name: pgpassword
+                  # Key stored in the Secrets object
+                  # Secrets object can store several key/value
+                  key: PGPASSWORD

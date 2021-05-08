@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      # Here, Kubernetes just allocate a long term storage
+      # that meets all the requirements (accessMode, storage, ...)
+      # that are laid out inside of ...
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            # ... The file with this name
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          # Assign the volume for use by all the different containers
+          # that are in use by our pod.
+          volumeMounts:
+            # Check on volume section (here line 18) and find the storage with the same name
+            - name: postgres-storage
+              # Folder reference : anything that the container stores at that folder are inside
+              # that directory will be actually stored inside of our volume storage
+              mountPath: /var/lib/postgresql/data
+              # /!\ VERY SPECIFIC FOR POSTGRES /!\ ERROR CREATES WITHOUT THIS LINE
+              # The data stores inside our persistent volume claim are stored in this directory
+              subPath: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              # Get the value for this environment variable from the configuration below
+              valueFrom:
+                secretKeyRef:
+                  # Name of the Secrets object
+                  name: pgpassword
+                  # Key stored in the Secrets object
+                  # Secrets object can store several key/value
+                  key: PGPASSWORD

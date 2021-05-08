@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-cluster-ip-service
+spec:
+  type: ClusterIP
+  # Find "component: web" that located in Deployment object
+  selector:
+    component: web
+  # Almost same template of NodePort object are
+  # without nodePort because we don't give access to the outside world
+  ports:
+    - port: 3000
+      targetPort: 3000

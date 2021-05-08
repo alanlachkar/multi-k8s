@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ip-service
+spec:
+  type: ClusterIP
+  # Find "component: redis" that located in Deployment object
+  selector:
+    component: redis
+  # Almost same template of NodePort object are
+  # without nodePort because we don't give access to the outside world
+  ports:
+    - port: 6379
+      targetPort: 6379
