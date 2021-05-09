@@ -20,7 +20,6 @@ spec:
         paths:
           # Redirect to client-cluster-ip-service (more precisely multi-client pod)
           - path: /?(.*)
-            pathType: Prefix
             backend:
               serviceName: client-cluster-ip-service
               servicePort: 3000
