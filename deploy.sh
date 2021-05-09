@@ -1,4 +1,3 @@
-
 #############################
 # docker command used in this file is the same that the one used in travis.yml file
 # Build all our images with 2 tags: 
@@ -7,6 +6,7 @@
 docker build -t alanlachkar/multi-client:latest -t alanlachkar/multi-client:$SHA -f ./client/Dockerfile ./client
 docker build -t alanlachkar/multi-server:latest -t alanlachkar/multi-server:$SHA -f ./server/Dockerfile ./server
 docker build -t alanlachkar/multi-worker:latest -t alanlachkar/multi-worker:$SHA -f ./worker/Dockerfile ./worker
+
 # Push each to Docker Hub
 docker push alanlachkar/multi-client:latest
 docker push alanlachkar/multi-server:latest
