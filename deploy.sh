@@ -8,13 +8,13 @@ docker build -t alanlachkar/multi-client:latest -t alanlachkar/multi-client:$SHA
 docker build -t alanlachkar/multi-server:latest -t alanlachkar/multi-server:$SHA -f ./server/Dockerfile ./server
 docker build -t alanlachkar/multi-worker:latest -t alanlachkar/multi-worker:$SHA -f ./worker/Dockerfile ./worker
 # Push each to Docker Hub
-docker push alanlachkar/milti-client:latest
-docker push alanlachkar/milti-server:latest
-docker push alanlachkar/milti-worker:latest
+docker push alanlachkar/multi-client:latest
+docker push alanlachkar/multi-server:latest
+docker push alanlachkar/multi-worker:latest
 
-docker push alanlachkar/milti-client:$SHA
-docker push alanlachkar/milti-server:$SHA
-docker push alanlachkar/milti-worker:$SHA
+docker push alanlachkar/multi-client:$SHA
+docker push alanlachkar/multi-server:$SHA
+docker push alanlachkar/multi-worker:$SHA
 
 #############################
 # kubectl command used in this file is the same that the one used in travis.yml file
