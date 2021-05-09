@@ -1,10 +1,20 @@
 sudo: required
 services:
   - docker
+
+env:
+  # Create global environment variable
+  global: 
+    # Id of the last commit
+    - SHA=$(git rev-parse HEAD)
+    # Make sure Google Cloud CLI doesn't try to display any prompts that require user input during travis build/environment
+    - COULDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
+  #############################
   # Install Google Cloud SQK CLI
-  ## Get the encryted JSON file containing my sensitive information to access to my Google Cloud account
+  ## Get the encryted JSON file and decrypt it only for Travis to give access to the Google Cloud account 
   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+  
   ## curl https://sdk.cloud.google.com === Download Google Cloud
   ## bash > /dev/null; === Install it locally on our instance that is assigned to us by Travis
   - curl https://sdk.cloud.google.com | bash > /dev/null;
@@ -16,20 +26,41 @@ before_install:
   ## Install & update kubectl inside Travis environment
   - gcloud components update kubectl
 
+  #############################
   # Configure the SDK with out Google Cloud authentication information
   ## "service-account.json" = file containing information to access Google account
   - gcloud auth activate-service-account --key-file service-account.json
-# Login to Docker CLI
+  
+  ## Specify which project's id used in Google Cloud account
+  - gcloud config set project multi-k8s-313207
+  
+  ## Specify the cluster's compute/zone  
+  gcloud config set compute/zone europe-west1-c
+  
+  ## Specify the cluster's name
+  gcloud container clusters get-credentials multi-cluster
 
-# Build the "test" version of multi-client
+  #############################
+  # Login to Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-# Run tests
+  #############################
+  # Build the "test" version of multi-client
+  ## -t flag with its value
+  ## -f flag with its value
+  ## /!\ The context at the end /!\
+  - docker build -t alanlachkar/react-test -f ./client/Dockerfile.dev ./client
 
-# If tests are successful, run a script to deploy the newest images
 
-# Build all our images, tag each one, push each to Docker Hub
+#############################
+# Run tests from the previous build image
+script:
+  - docker run -e CI=true alanlachkar/react-test npm test
 
-# Apply all configuration files in "k8s" folder
-
-# Imperatively set latest images on each deployment
-
+#############################
+# If tests are successful, run the script (named deploy.sh) to deploy the newest images
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
