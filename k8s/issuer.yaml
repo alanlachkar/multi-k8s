@@ -1,6 +1,8 @@
 ############################################################################
 #########################         TEMPLATE         #########################
-############################################################################
+# To be used ONLY IF you want to configure your kubernetes environment WITH HTTPS CONNECTION
+# /!\ This configuration requires A PAID DOMAIN NAME  /!\
+
 # apiVersion = specify bucket of different object types that we pull from
 apiVersion: certmanager.k8s.io/v1alpha1
 # Object type only present in certmanager api version

@@ -1,6 +1,8 @@
 ############################################################################
 #########################         TEMPLATE         #########################
-############################################################################
+# To be used ONLY IF you want to configure your kubernetes environment WITH HTTPS CONNECTION
+# /!\ This configuration requires A PAID DOMAIN NAME  /!\
+
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
