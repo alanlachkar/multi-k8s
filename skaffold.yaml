@@ -1,0 +1,56 @@
+# Link to skaffold site : https://skaffold.dev/docs/references/yaml/
+# To access to your client with Skaffold, it is the same URL than your Ingress/NodePoint (http://localhost:31515)
+
+apiVersion: skaffold/v2beta12
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      # Define all config files (Kubernetes files) we want to Skaffold maanage for us
+      - ./k8s/*
+# Specify all different images/deployments that we want skaffold to manage
+build:
+  local:
+    # By default, Skaffold try to push the images but we don't want that
+    # We just change some code and directly check the result in your local machine
+    push: false
+  # Elements (images or containers) that we want skaffold to manage
+  artifacts:
+    ######################## CLIENT ########################
+    - image: alanlachkar/multi-client
+      # Folder where we are building this image from
+      context: client
+      # Specify the Dockerfile we want to used
+      docker:
+        # We used Skaffold to simplify our local development so you choose Dockerfile.dev
+        # to start the development mode
+        dockerfile: Dockerfile.dev
+      # Local files synced to pods instead of triggering an image build when modified.
+      # If no files are listed, sync all the files and infer the destination.
+      # example : Any js files modified, Skaffold will take them and throw them into the container
+      sync:
+        manual:
+          - src: "src/**/*.js"
+            dest: .
+          - src: "src/**/*.css"
+            dest: .
+          - src: "src/**/*.html"
+            dest: .
+    ######################## WORKER ########################
+    - image: alanlachkar/multi-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "*.js"
+            dest: .
+    ######################## SERVER ########################
+    - image: alanlachkar/multi-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "*.js"
+            dest: .

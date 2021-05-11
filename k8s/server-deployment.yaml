@@ -38,7 +38,10 @@ spec:
             # Name of the environment variable
             # name and key are the same but can be different
             - name: PGPASSWORD
+              # value: myPGPassword123
               # Get the value for this environment variable from the configuration below
+              # To create a secret we need an imerative way (command line below)
+              # kubectl create secret generic pgpassword --from-literal PGPASSWORD=<your_password>
               valueFrom:
                 secretKeyRef:
                   # Name of the Secrets object
