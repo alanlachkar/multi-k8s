@@ -3,18 +3,18 @@
 # To be used ONLY IF you want to configure your kubernetes environment WITH HTTPS CONNECTION
 # /!\ This configuration requires A PAID DOMAIN NAME  /!\
 
-# apiVersion = specify bucket of different object types that we pull from
-#apiVersion: certmanager.k8s.io/v1alpha1
-## Object type only present in certmanager api version
-#kind: ClusterIssuer
-#metadata:
-#  name: letsencrypt-prod
-#spec:
-#  acme:
-#  # Specify the server we want to access
-#  server: https://acme-02.api.letsencrypt.org/directory
-#  # Need email but we don't know why let's encrypt needed it
-#  email: "alan.lachkar@htomail.fr"
-#  privateKeyRef:
-#    name: letsencrypt-prod
-#    http01: {}
+apiVersion = specify bucket of different object types that we pull from
+apiVersion: certmanager.k8s.io/v1alpha1
+# Object type only present in certmanager api version
+kind: ClusterIssuer
+metadata:
+ name: letsencrypt-prod
+spec:
+ acme:
+ # Specify the server we want to access
+ server: https://acme-02.api.letsencrypt.org/directory
+ # Need email but we don't know why let's encrypt needed it
+ email: "alan.lachkar@htomail.fr"
+ privateKeyRef:
+   name: letsencrypt-prod
+   http01: {}

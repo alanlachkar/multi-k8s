@@ -7,7 +7,11 @@ deploy:
   kubectl:
     manifests:
       # Define all config files (Kubernetes files) we want to Skaffold maanage for us
-      - ./k8s/*
+      - ./k8s/client-deployment.yaml
+      - ./k8s/server-deployment.yaml
+      - ./k8s/worker-deployment.yaml
+      - ./k8s/client-cluster-ip-service.yaml
+      - ./k8s/server-cluster-ip-service.yaml
 # Specify all different images/deployments that we want skaffold to manage
 build:
   local:
@@ -16,7 +20,7 @@ build:
     push: false
   # Elements (images or containers) that we want skaffold to manage
   artifacts:
-    ######################## CLIENT ########################
+    ######################## CLIENT SECTION ########################
     - image: alanlachkar/multi-client
       # Folder where we are building this image from
       context: client
@@ -28,6 +32,7 @@ build:
       # Local files synced to pods instead of triggering an image build when modified.
       # If no files are listed, sync all the files and infer the destination.
       # example : Any js files modified, Skaffold will take them and throw them into the container
+      # If other files than those below are updated, Skaffold will rebuild client from scratch (mode 1)
       sync:
         manual:
           - src: "src/**/*.js"
@@ -36,19 +41,21 @@ build:
             dest: .
           - src: "src/**/*.html"
             dest: .
-    ######################## WORKER ########################
+    ######################## WORKER SECTION ########################
     - image: alanlachkar/multi-worker
       context: worker
       docker:
+        # Each development modification restart the worker element because we used nodemon
         dockerfile: Dockerfile.dev
       sync:
         manual:
           - src: "*.js"
             dest: .
-    ######################## SERVER ########################
+    ######################## SERVER SECTION ########################
     - image: alanlachkar/multi-server
       context: server
       docker:
+        # Each development modification restart the server element because we used nodemon
         dockerfile: Dockerfile.dev
       sync:
         manual:
